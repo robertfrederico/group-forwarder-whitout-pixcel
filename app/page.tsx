@@ -47,7 +47,7 @@ const generatePersona = () => ({
 });
 
 const CONFIG = {
-  pixelId: "SEU_PIXEL_AQUI", 
+  pixelId: process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID!, 
   instaName: "Dicas de Ofertas e Achadinhos"
 };
 
@@ -129,7 +129,9 @@ export default function App() {
       const data = await response.json();
       
       if (data.url) {
-        window.location.href = data.url;
+        setTimeout(() => {
+          window.location.href = data.url;
+        }, 500);
       } else {
         clearTimeout(securityTimeout);
         throw new Error(data.error || "Nenhum grupo disponível.");
