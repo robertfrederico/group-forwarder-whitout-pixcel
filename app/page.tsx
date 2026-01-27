@@ -160,7 +160,7 @@ export default function App() {
             {CONFIG.instaName}
           </h1>
           <p className="text-green-50 text-xs sm:text-sm font-medium opacity-90">
-            As melhores promoções antes de todo o mundo!
+            As melhores promoções antes de todo mundo!
           </p>
         </div>
 
@@ -178,18 +178,22 @@ export default function App() {
           </div>
 
           <h2 className="text-lg sm:text-xl font-bold mb-4 leading-tight">
-            Entra agora no nosso grupo de ofertas exclusivo!
+            Entre agora no nosso grupo de ofertas exclusivo!
           </h2>
 
           <ul className="text-left space-y-3 mb-8 inline-block">
             <li className="flex items-center text-slate-600 text-sm font-medium">
               <CheckCircle size={16} className="text-green-500 mr-2 shrink-0" />
-              Cupões de desconto diários.
+              Cupons de desconto diários.
             </li>
             <li className="flex items-center text-slate-600 text-sm font-medium">
               <CheckCircle size={16} className="text-green-500 mr-2 shrink-0" />
-              Links verificados e seguros.
+              Links verificados e 100% seguros.
             </li>
+            <li className="flex items-center text-slate-600 text-sm font-medium">
+              <CheckCircle size={16} className="text-green-500 mr-2 shrink-0" />
+              Sem spam. Apenas o que realmente interessa.
+            </li>            
           </ul>
 
           <button
