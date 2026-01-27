@@ -5,7 +5,6 @@ import { Users, Zap, ShieldCheck, CheckCircle, Bell } from 'lucide-react';
 
 /**
  * MOTOR DE GERAÇÃO ALEATÓRIA (Mini-Faker)
- * Tabelas de dados para gerar combinações únicas no popup de prova social
  */
 const DATA_POOL = {
   firstNames: [
@@ -54,15 +53,15 @@ const CONFIG = {
 
 export default function App() {
   const [activeNotification, setActiveNotification] = useState<any>(null);
-  const [vagasRestantes, setVagasRestantes] = useState(14); // Valor inicial padrão
+  const [vagasRestantes, setVagasRestantes] = useState(14);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Inicializa o Pixel do Facebook
   useEffect(() => {
     if (typeof window !== 'undefined' && CONFIG.pixelId !== "SEU_PIXEL_AQUI") {
-      // @ts-ignore
-      !(function (f, b, e, v, n, t, s) {
+      // Tipagem explícita dos parâmetros para evitar erro de 'implicit any' no Vercel
+      (function (f: any, b: any, e: any, v: any, n?: any, t?: any, s?: any) {
         if (f.fbq) return;
         n = f.fbq = function () {
           n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
@@ -78,9 +77,12 @@ export default function App() {
         s = b.getElementsByTagName(e)[0];
         s.parentNode.insertBefore(t, s);
       })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+      
       const fbq = (window as any).fbq;
-      fbq('init', CONFIG.pixelId);
-      fbq('track', 'PageView');
+      if (fbq) {
+        fbq('init', CONFIG.pixelId);
+        fbq('track', 'PageView');
+      }
     }
   }, []);
 
@@ -113,7 +115,6 @@ export default function App() {
     setLoading(true);
     setError(null);
 
-    // Timer de segurança: Se em 8 segundos não redirecionar, volta o botão ao normal
     const securityTimeout = setTimeout(() => {
       setLoading(false);
     }, 8000);
@@ -128,13 +129,12 @@ export default function App() {
       const data = await response.json();
       
       if (data.url) {
-        // Redireciona o usuário
         window.location.href = data.url;
       } else {
         clearTimeout(securityTimeout);
         throw new Error(data.error || "Nenhum grupo disponível.");
       }
-    } catch (err) {
+    } catch (err: any) {
       clearTimeout(securityTimeout);
       setError("Não conseguimos validar a tua vaga. Tenta novamente!");
       setLoading(false);
@@ -192,7 +192,6 @@ export default function App() {
             </li>
           </ul>
 
-          {/* Botão de Ação Ajustado para Mobile */}
           <button
             onClick={handleJoinGroup}
             disabled={loading}
