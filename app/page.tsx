@@ -23,7 +23,7 @@ const DATA_POOL = {
   times: ["agora", "há 1 min", "há 2 min", "há 3 min"]
 };
 
-const getRandom = (arr: any[]) => arr[Math.floor(Math.random() * arr.length)];
+const getRandom = (arr: any[]): any => arr[Math.floor(Math.random() * arr.length)];
 
 const generatePersona = () => ({
   name: `${getRandom(DATA_POOL.firstNames)} ${getRandom(DATA_POOL.lastNames)}`,
@@ -31,6 +31,9 @@ const generatePersona = () => ({
   time: getRandom(DATA_POOL.times)
 });
 
+/**
+ * UTILS & CONFIG
+ */
 const getSafeEnvVar = (name: string): string | null => {
   try {
     return typeof process !== 'undefined' && process.env ? (process.env as any)[name] : null;
@@ -39,10 +42,7 @@ const getSafeEnvVar = (name: string): string | null => {
   }
 };
 
-const CONFIG = {
-  pixelId: getSafeEnvVar('NEXT_PUBLIC_FACEBOOK_PIXEL_ID') || "SEU_PIXEL_AQUI", 
-  instaName: "Dicas de Ofertas e Achadinhos"
-};
+const PIXEL_ID = getSafeEnvVar('NEXT_PUBLIC_FACEBOOK_PIXEL_ID');
 
 const LOGOS = [
   { name: "Amazon", url: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Amazon_2024.svg/250px-Amazon_2024.svg.png" },
@@ -57,66 +57,90 @@ const LOGOS = [
 
 export default function App() {
   const [activeNotification, setActiveNotification] = useState<any>(null);
-  const [vagasRestantes, setVagasRestantes] = useState(14);
-  const [loading, setLoading] = useState(false);
+  const [vagasRestantes, setVagasRestantes] = useState<number>(14);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
+  // 1. MONITORIZAÇÃO DE ACESSOS (PAGE VIEWS)
   useEffect(() => {
     const recordPageView = async () => {
-      try { await fetch('/api/stats/view', { method: 'POST' }); } catch (err) {}
+      try { 
+        await fetch('/api/stats/view', { method: 'POST' }); 
+      } catch (err) {
+        // Falha silenciosa para não quebrar a UI
+      }
     };
     recordPageView();
   }, []);
 
+  // 2. INICIALIZAÇÃO DO FACEBOOK PIXEL (Injeção manual segura para o build)
   useEffect(() => {
-    if (typeof window !== 'undefined' && CONFIG.pixelId !== "SEU_PIXEL_AQUI") {
-      (function(f: any, b: any, e: any, v: any, n?: any, t?: any, s?: any){
-        if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-        t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)
-      })(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
-      
-      const fbq = (window as any).fbq;
-      if (fbq) { fbq('init', CONFIG.pixelId); fbq('track', 'PageView'); }
+    if (typeof window !== 'undefined' && PIXEL_ID && PIXEL_ID !== "SEU_PIXEL_AQUI") {
+      const fbqWindow = window as any;
+      if (!fbqWindow.fbq) {
+        (function(f: any, b: any, e: any, v: any, n?: any, t?: any, s?: any) {
+          if (f.fbq) return;
+          n = f.fbq = function() {
+            n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+          };
+          if (!f._fbq) f._fbq = n;
+          n.push = n;
+          n.loaded = !0;
+          n.version = '2.0';
+          n.queue = [];
+          t = b.createElement(e);
+          t.async = !0;
+          t.src = v;
+          s = b.getElementsByTagName(e)[0];
+          s.parentNode.insertBefore(t, s);
+        })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+        
+        fbqWindow.fbq('init', PIXEL_ID);
+        fbqWindow.fbq('track', 'PageView');
+      }
     }
   }, []);
 
+  // 3. LOGICA DE VAGAS E NOTIFICAÇÕES
   useEffect(() => {
     setVagasRestantes(Math.floor(Math.random() * (25 - 14 + 1)) + 14);
-  }, []);
-
-  useEffect(() => {
+    
     const interval = setInterval(() => {
       setActiveNotification(generatePersona());
       setTimeout(() => setActiveNotification(null), 4000);
     }, 9000);
-    return () => clearInterval(interval);
+
+    const urgencyTimeout = setInterval(() => {
+      setVagasRestantes(prev => (prev > 3 ? prev - 1 : prev));
+    }, 15000);
+
+    return () => {
+      clearInterval(interval);
+      clearInterval(urgencyTimeout);
+    };
   }, []);
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (vagasRestantes > 3) setVagasRestantes(prev => prev - 1);
-    }, 15000);
-    return () => clearTimeout(timeout);
-  }, [vagasRestantes]);
-
+  // 4. API DE REDIRECCIONAMENTO + EVENTO LEAD
   const handleJoinGroup = async () => {
     setLoading(true);
     setError(null);
     const securityTimeout = setTimeout(() => setLoading(false), 8000);
     
-    const fbq = (window as any).fbq;
-    if (fbq) fbq('track', 'Lead', { content_name: 'Entrada no Grupo' });
+    const fbqWindow = window as any;
+    if (typeof window !== 'undefined' && fbqWindow.fbq) {
+      fbqWindow.fbq('track', 'Lead', { content_name: 'Entrada no Grupo' });
+    }
 
     try {
       const response = await fetch('/api/groups/redirect', { method: 'POST' });
       const data = await response.json();
+      
       if (data.url) {
         setTimeout(() => { window.location.href = data.url; }, 500);
       } else {
         throw new Error(data.error || "Nenhum grupo disponível.");
       }
-    } catch (err) {
+    } catch (err: any) {
       clearTimeout(securityTimeout);
       setError("Não conseguimos validar a tua vaga. Tenta novamente!");
       setLoading(false);
@@ -126,7 +150,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#F3F4F6] flex flex-col items-center justify-start sm:justify-center p-2 sm:p-4 font-sans text-slate-900 relative overflow-x-hidden">
       
-      {/* Notificação Flutuante (Popup topo) */}
+      {/* Notificação Flutuante */}
       <div className={`fixed top-4 left-4 right-4 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 z-[1000] transition-all duration-500 ${activeNotification ? 'translate-y-0 opacity-100' : '-translate-y-20 opacity-0'}`}>
         <div className="bg-white border border-purple-100 rounded-full px-4 py-2 shadow-2xl flex items-center gap-3 max-w-fit mx-auto">
           <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
@@ -139,7 +163,7 @@ export default function App() {
       <div className="w-full max-w-[390px] z-10 mt-2 mb-4">
         <div className="bg-white rounded-[2rem] shadow-xl overflow-hidden border border-purple-50 flex flex-col">
           
-          {/* Header Compacto */}
+          {/* Header Compacto (S24 Ultra fix) */}
           <div className="bg-[#6b21a8] pt-6 pb-5 px-6 text-center relative">
             <div className="flex justify-center mb-4">
               <div className="bg-[#fde047] text-[#6b21a8] font-black px-3 py-1 rounded-full text-[9px] uppercase tracking-wider animate-bounce shadow-md flex items-center gap-1">
@@ -163,18 +187,17 @@ export default function App() {
             </h1>
           </div>
 
-          {/* Carrossel de Lojas (Mais baixo) */}
+          {/* Carrossel de Lojas */}
           <div className="overflow-hidden py-3 bg-white border-y border-slate-50">
             <div className="flex w-max animate-carousel items-center">
               {[...LOGOS, ...LOGOS].map((logo, i) => (
                 <div key={i} className="flex-none flex justify-center items-center px-4 w-[110px]">
-                  <img src={logo.url} alt={logo.name} className="h-5 object-contain" />
+                  <img src={logo.url} alt={logo.name} className="h-5 object-contain transform scale-110" />
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Checklist e Botão */}
           <div className="px-6 py-5">
             <div className="space-y-2.5 mb-6">
               {[
@@ -206,14 +229,13 @@ export default function App() {
               ) : (
                 <>
                   <Zap size={20} fill="white" className="shrink-0" />
-                  <span className="truncate uppercase">Entrar no grupo agora</span>
+                  <span className="truncate uppercase tracking-tight">Entrar no grupo agora</span>
                 </>
               )}
             </button>
 
             {error && <p className="mt-3 text-center text-[10px] font-bold text-red-600 bg-red-50 p-2 rounded-lg">{error}</p>}
 
-            {/* Prova Social Membros */}
             <div className="mt-6 p-3 bg-slate-50 rounded-xl text-center border border-slate-100">
               <div className="flex justify-center -space-x-1.5 mb-2">
                 {[201, 202, 203, 204].map(id => (
@@ -226,7 +248,6 @@ export default function App() {
               </p>
             </div>
 
-            {/* Escassez (Agrupada) */}
             <div className="mt-5 flex flex-col items-center">
               <div className="w-full bg-slate-100 h-1 rounded-full overflow-hidden mb-2">
                 <div 
@@ -244,13 +265,12 @@ export default function App() {
           </div>
         </div>
         
-        {/* Footer Confiança */}
         <div className="mt-4 flex items-center justify-center space-x-4 opacity-60">
-           <div className="flex items-center text-[9px] font-bold text-slate-500">
-             <ShieldCheck size={12} className="mr-1 text-green-600" /> AMBIENTE SEGURO
+           <div className="flex items-center text-[9px] font-bold text-slate-500 uppercase">
+             <ShieldCheck size={12} className="mr-1 text-green-600" /> Ambiente Seguro
            </div>
-           <div className="flex items-center text-[9px] font-bold text-slate-500">
-             <CheckCircle size={12} className="mr-1 text-green-600" /> VERIFICADO
+           <div className="flex items-center text-[9px] font-bold text-slate-500 uppercase">
+             <CheckCircle size={12} className="mr-1 text-green-600" /> Verificado
            </div>
         </div>
 
