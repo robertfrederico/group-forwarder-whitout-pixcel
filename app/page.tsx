@@ -36,13 +36,19 @@ const generatePersona = () => ({
  */
 const getSafeEnvVar = (name: string): string | null => {
   try {
+    // No Next.js, as variáveis NEXT_PUBLIC_ são substituídas em tempo de build.
+    // Usamos esta checagem para evitar o erro "process is not defined" no navegador.
     return typeof process !== 'undefined' && process.env ? (process.env as any)[name] : null;
   } catch (e) {
     return null;
   }
 };
 
-const PIXEL_ID = getSafeEnvVar('NEXT_PUBLIC_FACEBOOK_PIXEL_ID');
+const CONFIG = {
+  // Pegando o ID do Pixel exatamente como está no teu Vercel
+  pixelId: getSafeEnvVar('NEXT_PUBLIC_FACEBOOK_PIXEL_ID'),
+  instaName: "Dicas de Ofertas e Achadinhos"
+};
 
 const LOGOS = [
   { name: "Amazon", url: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Amazon_2024.svg/250px-Amazon_2024.svg.png" },
@@ -61,42 +67,39 @@ export default function App() {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  // 1. MONITORIZAÇÃO DE ACESSOS (PAGE VIEWS)
+  // 1. MONITORIZAÇÃO DE ACESSOS (PAGE VIEWS NO DB)
   useEffect(() => {
     const recordPageView = async () => {
-      try { 
-        await fetch('/api/stats/view', { method: 'POST' }); 
-      } catch (err) {
-        // Falha silenciosa para não quebrar a UI
-      }
+      try { await fetch('/api/stats/view', { method: 'POST' }); } catch (err) {}
     };
     recordPageView();
   }, []);
 
-  // 2. INICIALIZAÇÃO DO FACEBOOK PIXEL (Injeção manual segura para o build)
+  // 2. REPLICAÇÃO DO PIXEL ORIGINAL (Lógica que você confirmou que funcionava)
   useEffect(() => {
-    if (typeof window !== 'undefined' && PIXEL_ID && PIXEL_ID !== "SEU_PIXEL_AQUI") {
-      const fbqWindow = window as any;
-      if (!fbqWindow.fbq) {
-        (function(f: any, b: any, e: any, v: any, n?: any, t?: any, s?: any) {
-          if (f.fbq) return;
-          n = f.fbq = function() {
-            n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
-          };
-          if (!f._fbq) f._fbq = n;
-          n.push = n;
-          n.loaded = !0;
-          n.version = '2.0';
-          n.queue = [];
-          t = b.createElement(e);
-          t.async = !0;
-          t.src = v;
-          s = b.getElementsByTagName(e)[0];
-          s.parentNode.insertBefore(t, s);
-        })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
-        
-        fbqWindow.fbq('init', PIXEL_ID);
-        fbqWindow.fbq('track', 'PageView');
+    if (typeof window !== 'undefined' && CONFIG.pixelId && CONFIG.pixelId !== "SEU_PIXEL_AQUI") {
+      // Injeção idêntica ao código original
+      (function (f: any, b: any, e: any, v: any, n?: any, t?: any, s?: any) {
+        if (f.fbq) return;
+        n = f.fbq = function () {
+          n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+        };
+        if (!f._fbq) f._fbq = n;
+        n.push = n;
+        n.loaded = !0;
+        n.version = '2.0';
+        n.queue = [];
+        t = b.createElement(e);
+        t.async = !0;
+        t.src = v;
+        s = b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t, s);
+      })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+
+      const fbq = (window as any).fbq;
+      if (fbq) {
+        fbq('init', CONFIG.pixelId);
+        fbq('track', 'PageView');
       }
     }
   }, []);
@@ -126,9 +129,9 @@ export default function App() {
     setError(null);
     const securityTimeout = setTimeout(() => setLoading(false), 8000);
     
-    const fbqWindow = window as any;
-    if (typeof window !== 'undefined' && fbqWindow.fbq) {
-      fbqWindow.fbq('track', 'Lead', { content_name: 'Entrada no Grupo' });
+    const fbq = (window as any).fbq;
+    if (fbq) {
+      fbq('track', 'Lead', { content_name: 'Entrada no Grupo' });
     }
 
     try {
