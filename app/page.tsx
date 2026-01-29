@@ -48,7 +48,7 @@ const DATA_POOL = {
   times: ["agora", "há 1 min", "há 2 min", "há 3 min"]
 };
 
-const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
+const getRandom = (arr: any) => arr[Math.floor(Math.random() * arr.length)];
 
 const generatePersona = () => ({
   name: `${getRandom(DATA_POOL.firstNames)} ${getRandom(DATA_POOL.lastNames)}`,
