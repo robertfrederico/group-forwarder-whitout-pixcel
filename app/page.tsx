@@ -1,10 +1,20 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Users, Zap, ShieldCheck, CheckCircle, Bell } from 'lucide-react';
+import { 
+  Zap, 
+  ShieldCheck, 
+  CheckCircle, 
+  Bell, 
+  Gift, 
+  Tag, 
+  ShoppingBag,
+  Check,
+  Users
+} from 'lucide-react';
 
 /**
- * MOTOR DE GERAÇÃO ALEATÓRIA (Mini-Faker)
+ * MOTOR DE GERAÇÃO ALEATÓRIA (Mini-Faker Original)
  */
 const DATA_POOL = {
   firstNames: [
@@ -38,7 +48,7 @@ const DATA_POOL = {
   times: ["agora", "há 1 min", "há 2 min", "há 3 min"]
 };
 
-const getRandom = (arr: string[]): string => arr[Math.floor(Math.random() * arr.length)];
+const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
 const generatePersona = () => ({
   name: `${getRandom(DATA_POOL.firstNames)} ${getRandom(DATA_POOL.lastNames)}`,
@@ -46,22 +56,59 @@ const generatePersona = () => ({
   time: getRandom(DATA_POOL.times)
 });
 
+// Ajuste técnico para evitar ReferenceError: process is not defined em ambientes de navegador
+const getSafeEnvVar = (name) => {
+  try {
+    return typeof process !== 'undefined' && process.env ? process.env[name] : null;
+  } catch (e) {
+    return null;
+  }
+};
+
 const CONFIG = {
-  pixelId: process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID!, 
+  pixelId: getSafeEnvVar('NEXT_PUBLIC_FACEBOOK_PIXEL_ID') || "SEU_PIXEL_AQUI", 
   instaName: "Dicas de Ofertas e Achadinhos"
 };
 
+const LOGOS = [
+  { name: "Amazon", url: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Amazon_2024.svg/250px-Amazon_2024.svg.png" },
+  { name: "Mercado Livre", url: "https://upload.wikimedia.org/wikipedia/pt/thumb/0/04/Logotipo_MercadoLivre.png/330px-Logotipo_MercadoLivre.png" },
+  { name: "Shopee", url: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Shopee_logo.svg/250px-Shopee_logo.svg.png" },
+  { name: "Shein", url: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Shein_Logo_2017.svg/250px-Shein_Logo_2017.svg.png" },
+  { name: "Magalu", url: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Magalu_-_novo_logo.png/250px-Magalu_-_novo_logo.png" },
+  { name: "AliExpress", url: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/AliExpress_2024.svg/250px-AliExpress_2024.svg.png" },
+  { name: "Sephora", url: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Sephora_logo.svg/250px-Sephora_logo.svg.png" },
+  { name: "Natura", url: "https://upload.wikimedia.org/wikipedia/pt/thumb/c/cb/Natura_Logo.png/250px-Natura_Logo.png" },
+  { name: "Avon", url: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Avon_Products_logo_%282023%29.svg/250px-Avon_Products_logo_%282023%29.svg.png" },
+  { name: "OBoticario", url: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Oboticario-logo.png/250px-Oboticario-logo.png" },
+  { name: "Casas Bahia", url: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Casas_Bahia_logo_2020.svg/250px-Casas_Bahia_logo_2020.svg.png" },
+  { name: "Netshoes", url: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Netshoes_2024.svg/250px-Netshoes_2024.svg.png"}
+];
+
 export default function App() {
-  const [activeNotification, setActiveNotification] = useState<any>(null);
+  const [activeNotification, setActiveNotification] = useState(null);
   const [vagasRestantes, setVagasRestantes] = useState(14);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
 
-  // Inicializa o Pixel do Facebook
+  // 1. Registro de Acesso (Page Views) - Lógica NOVA solicitada
+  useEffect(() => {
+    const recordPageView = async () => {
+      try {
+        // Faz a chamada para a sua rota de estatísticas
+        await fetch('/api/stats/view', { method: 'POST' });
+      } catch (err) {
+        // Falha silenciosa para não atrapalhar a experiência do usuário
+        console.warn("Monitoramento de acesso indisponível no momento.");
+      }
+    };
+    recordPageView();
+  }, []);
+
+  // 2. Inicializa o Pixel do Facebook (Lógica Original)
   useEffect(() => {
     if (typeof window !== 'undefined' && CONFIG.pixelId !== "SEU_PIXEL_AQUI") {
-      // Tipagem explícita dos parâmetros para evitar erro de 'implicit any' no Vercel
-      (function (f: any, b: any, e: any, v: any, n?: any, t?: any, s?: any) {
+      (function (f, b, e, v, n, t, s) {
         if (f.fbq) return;
         n = f.fbq = function () {
           n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
@@ -78,7 +125,7 @@ export default function App() {
         s.parentNode.insertBefore(t, s);
       })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
       
-      const fbq = (window as any).fbq;
+      const fbq = window.fbq;
       if (fbq) {
         fbq('init', CONFIG.pixelId);
         fbq('track', 'PageView');
@@ -86,13 +133,13 @@ export default function App() {
     }
   }, []);
 
-  // Inicializa a quantidade de vagas de forma aleatória entre 14 e 25
+  // 3. Inicializa Vagas (Lógica Original)
   useEffect(() => {
     const randomVagas = Math.floor(Math.random() * (25 - 14 + 1)) + 14;
     setVagasRestantes(randomVagas);
   }, []);
 
-  // Notificações de Prova Social
+  // 4. Notificações de Prova Social (Lógica Original: 9s/4s)
   useEffect(() => {
     const showRandomNotification = () => {
       setActiveNotification(generatePersona());
@@ -103,7 +150,7 @@ export default function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // Urgência Visual: Reduz vagas gradualmente
+  // 5. Urgência Visual (Lógica Original)
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (vagasRestantes > 3) setVagasRestantes(prev => prev - 1);
@@ -111,6 +158,7 @@ export default function App() {
     return () => clearTimeout(timeout);
   }, [vagasRestantes]);
 
+  // 6. Redirecionamento de Grupos via API (Lógica Original)
   const handleJoinGroup = async () => {
     setLoading(true);
     setError(null);
@@ -119,7 +167,7 @@ export default function App() {
       setLoading(false);
     }, 8000);
 
-    const fbq = (window as any).fbq;
+    const fbq = window.fbq;
     if (fbq) {
       fbq('track', 'Lead', { content_name: 'Entrada no Grupo' });
     }
@@ -136,7 +184,7 @@ export default function App() {
         clearTimeout(securityTimeout);
         throw new Error(data.error || "Nenhum grupo disponível.");
       }
-    } catch (err: any) {
+    } catch (err) {
       clearTimeout(securityTimeout);
       setError("Não conseguimos validar a tua vaga. Tenta novamente!");
       setLoading(false);
@@ -144,117 +192,165 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center font-sans text-slate-900 p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-[#fdfaf9] flex flex-col items-center justify-center p-4 py-8 font-sans text-slate-900 relative overflow-hidden">
       
-      {/* Background Decorativo */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-green-100 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-100 rounded-full blur-3xl opacity-30 pointer-events-none"></div>
-
-      {/* Container Principal */}
-      <main className="max-w-md w-full bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-100 z-10">
-        
-        {/* Banner Superior */}
-        <div className="bg-gradient-to-r from-green-500 to-emerald-600 p-6 sm:p-8 text-center text-white relative">
-          <div className="absolute top-4 right-4 animate-pulse">
-            <Zap size={24} className="text-yellow-300 fill-yellow-300" />
-          </div>
-          <h1 className="text-xl sm:text-2xl font-black uppercase tracking-tight mb-2 leading-tight">
-            {CONFIG.instaName}
-          </h1>
-          <p className="text-green-50 text-xs sm:text-sm font-medium opacity-90">
-            As melhores promoções antes de todo mundo!
+      {/* Notificação Flutuante */}
+      <div className={`fixed top-5 left-1/2 -translate-x-1/2 z-[1000] transition-all duration-500 ${activeNotification ? 'translate-y-0 opacity-100' : '-translate-y-20 opacity-0'}`}>
+        <div className="bg-white border border-purple-100 rounded-full px-5 py-3 shadow-2xl flex items-center gap-3">
+          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+          <p className="text-[11px] font-bold text-gray-700">
+            <span className="text-[#6b21a8]">{activeNotification?.name}</span> entrou no grupo! ✨
           </p>
-        </div>
-
-        {/* Conteúdo Central */}
-        <div className="p-6 sm:p-8 text-center">
-          <div className="flex justify-center mb-6">
-            <div className="relative">
-              <div className="bg-green-50 p-4 rounded-full border border-green-100 shadow-inner">
-                <Users size={40} className="text-green-600 sm:w-12 sm:h-12" />
-              </div>
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-full animate-bounce shadow-md">
-                LOTANDO
-              </span>
-            </div>
-          </div>
-
-          <h2 className="text-lg sm:text-xl font-bold mb-4 leading-tight">
-            Entre agora no nosso grupo de ofertas exclusivo!
-          </h2>
-
-          <ul className="text-left space-y-3 mb-8 inline-block">
-            <li className="flex items-center text-slate-600 text-sm font-medium">
-              <CheckCircle size={16} className="text-green-500 mr-2 shrink-0" />
-              Cupons de desconto diários.
-            </li>
-            <li className="flex items-center text-slate-600 text-sm font-medium">
-              <CheckCircle size={16} className="text-green-500 mr-2 shrink-0" />
-              Links verificados e 100% seguros.
-            </li>
-            <li className="flex items-center text-slate-600 text-sm font-medium">
-              <CheckCircle size={16} className="text-green-500 mr-2 shrink-0" />
-              Sem spam. Apenas o que realmente interessa.
-            </li>            
-          </ul>
-
-          <button
-            onClick={handleJoinGroup}
-            disabled={loading}
-            className={`w-full py-4 sm:py-5 px-4 rounded-2xl text-white font-bold text-sm sm:text-base lg:text-lg shadow-xl transition-all active:scale-95 flex items-center justify-center space-x-2 
-              ${loading ? 'bg-slate-300 cursor-wait' : 'bg-green-600 hover:bg-green-700 animate-pulse-slow shadow-green-200/50'}`}
-          >
-            {loading ? (
-              <div className="flex items-center italic">
-                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                A validar vaga...
-              </div>
-            ) : (
-              <>
-                <span className="truncate">ENTRAR NO GRUPO AGORA</span>
-                <Zap size={20} fill="white" className="text-white shrink-0" />
-              </>
-            )}
-          </button>
-
-          {error && <p className="mt-4 text-xs font-bold text-red-500">{error}</p>}
-
-          <p className="mt-4 text-xs font-black text-red-500 flex items-center justify-center uppercase tracking-widest italic">
-            <span className="inline-block w-2 h-2 bg-red-500 rounded-full mr-2 animate-ping"></span>
-            Resta apenas {vagasRestantes} vagas disponíveis
-          </p>
-        </div>
-
-        {/* Footer Seguro */}
-        <div className="bg-slate-50 p-4 border-t border-slate-100 flex items-center justify-center space-x-4 opacity-70">
-           <div className="flex items-center text-[10px] font-bold text-green-700">
-             <ShieldCheck size={14} className="mr-1" /> AMBIENTE SEGURO
-           </div>
-           <div className="flex items-center text-[10px] font-bold text-green-700">
-             <CheckCircle size={14} className="mr-1" /> VERIFICADO
-           </div>
-        </div>
-      </main>
-
-      {/* Popup de Prova Social */}
-      <div className={`fixed bottom-6 left-6 right-6 md:right-auto md:max-w-xs z-50 transition-all duration-500 transform ${activeNotification ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0 pointer-events-none'}`}>
-        <div className="bg-white rounded-2xl shadow-2xl p-4 border border-slate-100 flex items-center space-x-4 border-l-4 border-l-green-500">
-          <div className="bg-green-100 text-green-600 p-3 rounded-full">
-            <Bell size={20} />
-          </div>
-          <div>
-            <p className="text-xs text-slate-500 leading-tight font-medium">
-              <strong className="text-slate-900">{activeNotification?.name}</strong> de {activeNotification?.city}
-            </p>
-            <p className="text-[13px] font-bold text-green-600 italic">Entrou no grupo {activeNotification?.time}</p>
-          </div>
         </div>
       </div>
 
+      <div className="w-full max-w-sm z-10">
+        <div className="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-purple-50">
+          
+          {/* Header Roxo Premium */}
+          <div className="bg-[#6b21a8] p-8 text-center relative">
+            <div className="flex justify-center mb-6">
+              <div className="bg-[#fde047] text-[#6b21a8] font-black px-3 py-1 rounded-full text-[10px] uppercase tracking-wider animate-bounce shadow-lg flex items-center gap-1">
+                <Gift size={12} /> ACESSO 100% GRATUITO
+              </div>
+            </div>
+
+            <div className="inline-block relative mb-4">
+              <div className="w-20 h-20 bg-[#4c1d95] rounded-full border-4 border-[#fde047] flex flex-col items-center justify-center p-2 text-center shadow-lg">
+                <span className="text-[7px] font-black text-[#fde047] leading-tight uppercase">Dicas de Ofertas e</span>
+                <span className="text-[7px] font-black text-[#fde047] leading-tight uppercase">Achadinhos</span>
+                <ShoppingBag size={20} className="text-[#fde047] mt-1" />
+              </div>
+              <div className="absolute -bottom-1 -right-1 bg-blue-500 w-6 h-6 rounded-full border-4 border-[#6b21a8] flex items-center justify-center shadow-md">
+                <Check size={12} className="text-white" />
+              </div>
+            </div>
+
+            <h1 className="text-white text-xl font-extrabold leading-tight px-2 uppercase tracking-tighter">
+              Participa na nossa Comunidade de Achadinhos
+            </h1>
+          </div>
+
+          {/* Carrossel de Lojas */}
+          <div className="overflow-hidden py-6 bg-white border-y border-slate-100">
+            <div className="flex w-max animate-carousel items-center">
+              {[...LOGOS, ...LOGOS].map((logo, i) => (
+                <div key={i} className="flex-none flex justify-center items-center px-6 w-[140px]">
+                  <img 
+                    src={logo.url} 
+                    alt={logo.name} 
+                    className="h-6 md:h-7 object-contain transition-all duration-300 transform hover:scale-110"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="p-8">
+            {/* Checklist de Valor */}
+            <div className="space-y-4 mb-8">
+              <div className="flex items-center gap-4">
+                <div className="w-6 h-6 rounded-full bg-green-50 flex items-center justify-center text-green-600 border border-green-100">
+                  <CheckCircle size={14} />
+                </div>
+                <p className="text-[13px] font-bold text-slate-600">Cupons de desconto diários.</p>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="w-6 h-6 rounded-full bg-green-50 flex items-center justify-center text-green-600 border border-green-100">
+                  <CheckCircle size={14} />
+                </div>
+                <p className="text-[13px] font-bold text-slate-600">Links verificados e 100% seguros.</p>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="w-6 h-6 rounded-full bg-green-50 flex items-center justify-center text-green-600 border border-green-100">
+                  <CheckCircle size={14} />
+                </div>
+                <p className="text-[13px] font-bold text-slate-600">Bugs de preço e promoções relâmpago.</p>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="w-6 h-6 rounded-full bg-green-50 flex items-center justify-center text-green-600 border border-green-100">
+                  <CheckCircle size={14} />
+                </div>
+                <p className="text-[13px] font-bold text-slate-600">Sem spam. Apenas o que realmente interessa.</p>
+              </div>
+            </div>
+
+            {/* Botão de Ação */}
+            <button
+              onClick={handleJoinGroup}
+              disabled={loading}
+              className={`w-full py-5 rounded-2xl text-white font-black text-lg shadow-xl flex items-center justify-center gap-3 transition-all active:scale-95 animate-pulse-slow
+                ${loading ? 'bg-slate-300 cursor-wait' : 'bg-[#25D366] hover:bg-[#1fb855] shadow-green-200/50 uppercase'}`}
+            >
+              {loading ? (
+                <div className="flex items-center italic">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Validando...
+                </div>
+              ) : (
+                <>
+                  <Zap size={24} fill="white" className="shrink-0" />
+                  <span className="truncate">ENTRAR NO GRUPO AGORA</span>
+                </>
+              )}
+            </button>
+
+            {error && <p className="mt-4 text-center text-xs font-bold text-red-600 bg-red-50 p-2 rounded-lg">{error}</p>}
+
+            {/* Prova Social de Membros */}
+            <div className="mt-8 p-4 bg-gray-50 rounded-2xl text-center border border-gray-100">
+              <div className="flex justify-center -space-x-2 mb-2">
+                {[201, 202, 203].map(id => (
+                  <img key={id} src={`https://i.pravatar.cc/100?u=${id}`} className="w-6 h-6 rounded-full border-2 border-white shadow-sm" alt="membro" />
+                ))}
+                <div className="w-6 h-6 rounded-full bg-[#6b21a8] text-white text-[8px] flex items-center justify-center font-bold border-2 border-white">+</div>
+              </div>
+              <p className="text-[11px] font-extrabold text-gray-700 leading-tight uppercase">
+                Junte-se a mais de <span className="text-[#6b21a8]">100 mil pessoas</span><br />economizando todos os dias!
+              </p>
+            </div>
+
+            {/* Barra de Escassez Dinâmica */}
+            <div className="mt-6 flex flex-col items-center gap-2">
+              <div className="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
+                <div 
+                  className="bg-[#6b21a8] h-full transition-all duration-1000 ease-out" 
+                  style={{ width: `${100 - (vagasRestantes * 2)}%` }}
+                ></div>
+              </div>
+              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest italic">
+                Grupo quase lotado
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        {/* Footer de Confiança */}
+        <div className="mt-8 flex items-center justify-center space-x-6 opacity-40">
+           <div className="flex items-center text-[10px] font-bold text-slate-600">
+             <ShieldCheck size={14} className="mr-1 text-green-600" /> AMBIENTE SEGURO
+           </div>
+           <div className="flex items-center text-[10px] font-bold text-slate-600">
+             <CheckCircle size={14} className="mr-1 text-green-600" /> VERIFICADO
+           </div>
+        </div>
+
+        <p className="text-center mt-6 text-[10px] text-gray-300 font-bold uppercase tracking-widest italic px-4">
+          Temos mais de 60 grupos de ofertas ativos!
+        </p>
+      </div>
+
       <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes carousel {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        .animate-carousel {
+          animation: carousel 20s linear infinite;
+        }
         @keyframes pulse-slow {
           0%, 100% { transform: scale(1); }
           50% { transform: scale(1.03); }
