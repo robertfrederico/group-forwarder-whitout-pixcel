@@ -48,7 +48,7 @@ const DATA_POOL = {
   times: ["agora", "há 1 min", "há 2 min", "há 3 min"]
 };
 
-const getRandom = (arr: any) => arr[Math.floor(Math.random() * arr.length)];
+const getRandom = (arr: any[]): any => arr[Math.floor(Math.random() * arr.length)];
 
 const generatePersona = () => ({
   name: `${getRandom(DATA_POOL.firstNames)} ${getRandom(DATA_POOL.lastNames)}`,
@@ -57,9 +57,9 @@ const generatePersona = () => ({
 });
 
 // Ajuste técnico para evitar ReferenceError: process is not defined em ambientes de navegador
-const getSafeEnvVar = (name) => {
+const getSafeEnvVar = (name: string): string | null => {
   try {
-    return typeof process !== 'undefined' && process.env ? process.env[name] : null;
+    return typeof process !== 'undefined' && process.env ? (process.env as any)[name] : null;
   } catch (e) {
     return null;
   }
@@ -86,10 +86,10 @@ const LOGOS = [
 ];
 
 export default function App() {
-  const [activeNotification, setActiveNotification] = useState(null);
+  const [activeNotification, setActiveNotification] = useState<any>(null);
   const [vagasRestantes, setVagasRestantes] = useState(14);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   // 1. Registro de Acesso (Page Views) - Lógica NOVA solicitada
   useEffect(() => {
@@ -108,7 +108,7 @@ export default function App() {
   // 2. Inicializa o Pixel do Facebook (Lógica Original)
   useEffect(() => {
     if (typeof window !== 'undefined' && CONFIG.pixelId !== "SEU_PIXEL_AQUI") {
-      (function (f, b, e, v, n, t, s) {
+      (function (f: any, b: any, e: any, v: any, n?: any, t?: any, s?: any) {
         if (f.fbq) return;
         n = f.fbq = function () {
           n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
@@ -125,7 +125,7 @@ export default function App() {
         s.parentNode.insertBefore(t, s);
       })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
       
-      const fbq = window.fbq;
+      const fbq = (window as any).fbq;
       if (fbq) {
         fbq('init', CONFIG.pixelId);
         fbq('track', 'PageView');
@@ -167,7 +167,7 @@ export default function App() {
       setLoading(false);
     }, 8000);
 
-    const fbq = window.fbq;
+    const fbq = (window as any).fbq;
     if (fbq) {
       fbq('track', 'Lead', { content_name: 'Entrada no Grupo' });
     }
@@ -184,7 +184,7 @@ export default function App() {
         clearTimeout(securityTimeout);
         throw new Error(data.error || "Nenhum grupo disponível.");
       }
-    } catch (err) {
+    } catch (err: any) {
       clearTimeout(securityTimeout);
       setError("Não conseguimos validar a tua vaga. Tenta novamente!");
       setLoading(false);
