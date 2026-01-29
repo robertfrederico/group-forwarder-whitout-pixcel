@@ -32,23 +32,10 @@ const generatePersona = () => ({
 });
 
 /**
- * UTILS & CONFIG
+ * CONFIG & PIXEL ID
+ * IMPORTANTE: O acesso precisa ser estático para o Next.js injetar o valor no build.
  */
-const getSafeEnvVar = (name: string): string | null => {
-  try {
-    // No Next.js, as variáveis NEXT_PUBLIC_ são substituídas em tempo de build.
-    // Usamos esta checagem para evitar o erro "process is not defined" no navegador.
-    return typeof process !== 'undefined' && process.env ? (process.env as any)[name] : null;
-  } catch (e) {
-    return null;
-  }
-};
-
-const CONFIG = {
-  // Pegando o ID do Pixel exatamente como está no teu Vercel
-  pixelId: getSafeEnvVar('NEXT_PUBLIC_FACEBOOK_PIXEL_ID'),
-  instaName: "Dicas de Ofertas e Achadinhos"
-};
+const PIXEL_ID = process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID;
 
 const LOGOS = [
   { name: "Amazon", url: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Amazon_2024.svg/250px-Amazon_2024.svg.png" },
@@ -75,10 +62,10 @@ export default function App() {
     recordPageView();
   }, []);
 
-  // 2. REPLICAÇÃO DO PIXEL ORIGINAL (Lógica que você confirmou que funcionava)
+  // 2. INICIALIZAÇÃO DO FACEBOOK PIXEL (Lógica Original Replicada)
   useEffect(() => {
-    if (typeof window !== 'undefined' && CONFIG.pixelId && CONFIG.pixelId !== "SEU_PIXEL_AQUI") {
-      // Injeção idêntica ao código original
+    if (typeof window !== 'undefined' && PIXEL_ID) {
+      // Script original conforme sua versão que funcionava
       (function (f: any, b: any, e: any, v: any, n?: any, t?: any, s?: any) {
         if (f.fbq) return;
         n = f.fbq = function () {
@@ -98,7 +85,7 @@ export default function App() {
 
       const fbq = (window as any).fbq;
       if (fbq) {
-        fbq('init', CONFIG.pixelId);
+        fbq('init', PIXEL_ID);
         fbq('track', 'PageView');
       }
     }
@@ -130,7 +117,7 @@ export default function App() {
     const securityTimeout = setTimeout(() => setLoading(false), 8000);
     
     const fbq = (window as any).fbq;
-    if (fbq) {
+    if (typeof window !== 'undefined' && fbq) {
       fbq('track', 'Lead', { content_name: 'Entrada no Grupo' });
     }
 
@@ -166,7 +153,7 @@ export default function App() {
       <div className="w-full max-w-[390px] z-10 mt-2 mb-4">
         <div className="bg-white rounded-[2rem] shadow-xl overflow-hidden border border-purple-50 flex flex-col">
           
-          {/* Header Compacto (S24 Ultra fix) */}
+          {/* Header Compacto (Ajustado para S24 Ultra) */}
           <div className="bg-[#6b21a8] pt-6 pb-5 px-6 text-center relative">
             <div className="flex justify-center mb-4">
               <div className="bg-[#fde047] text-[#6b21a8] font-black px-3 py-1 rounded-full text-[9px] uppercase tracking-wider animate-bounce shadow-md flex items-center gap-1">
@@ -190,7 +177,7 @@ export default function App() {
             </h1>
           </div>
 
-          {/* Carrossel de Lojas */}
+          {/* Carrossel de Lojas (Colorido) */}
           <div className="overflow-hidden py-3 bg-white border-y border-slate-50">
             <div className="flex w-max animate-carousel items-center">
               {[...LOGOS, ...LOGOS].map((logo, i) => (
@@ -202,6 +189,7 @@ export default function App() {
           </div>
 
           <div className="px-6 py-5">
+            {/* Checklist de Valor (Original) */}
             <div className="space-y-2.5 mb-6">
               {[
                 "Cupons de desconto diários.",
@@ -209,11 +197,11 @@ export default function App() {
                 "Bugs de preço e promoções relâmpago.",
                 "Sem spam. Apenas o que interessa."
               ].map((text, i) => (
-                <div key={i} className="flex items-center gap-3">
-                  <div className="w-5 h-5 rounded-full bg-green-50 flex items-center justify-center text-green-600 shrink-0">
+                <div key={i} className="flex items-center gap-3 text-left">
+                  <div className="w-5 h-5 rounded-full bg-green-50 flex items-center justify-center text-green-600 shrink-0 border border-green-100">
                     <CheckCircle size={14} />
                   </div>
-                  <p className="text-[12px] font-semibold text-slate-600">{text}</p>
+                  <p className="text-[12px] font-semibold text-slate-600 leading-tight">{text}</p>
                 </div>
               ))}
             </div>
@@ -268,11 +256,12 @@ export default function App() {
           </div>
         </div>
         
+        {/* Footer de Confiança (Conforme image_189b95.png) */}
         <div className="mt-4 flex items-center justify-center space-x-4 opacity-60">
-           <div className="flex items-center text-[9px] font-bold text-slate-500 uppercase">
+           <div className="flex items-center text-[9px] font-bold text-slate-600 uppercase">
              <ShieldCheck size={12} className="mr-1 text-green-600" /> Ambiente Seguro
            </div>
-           <div className="flex items-center text-[9px] font-bold text-slate-500 uppercase">
+           <div className="flex items-center text-[9px] font-bold text-slate-600 uppercase">
              <CheckCircle size={12} className="mr-1 text-green-600" /> Verificado
            </div>
         </div>
