@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     // 2. Buscamos TODOS os grupos ativos do banco de uma vez
     const { data: allGroups, error: fetchError } = await supabase
       .from('whatsapp_groups')
-      .select('id, group_link, number_clicks, available_positions')
+      .select('id, group_link, number_clicks, available_positions, active')
       .eq('active', true);
 
     if (fetchError || !allGroups || allGroups.length === 0) {
