@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
-// Inicializa o cliente Supabase
-// Certifica-te de que estas variáveis estão no teu .env.local
+// Inicializa o cliente Supabase com as tuas variáveis de ambiente
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -15,57 +14,74 @@ interface WhatsAppGroup {
   active: boolean;
 }
 
-export async function POST() {
+export async function POST(req: Request) {
   try {
-    // 1. Procuramos todos os grupos ativos
-    // Em vez de filtrar no banco a comparação de colunas (que deu erro), 
-    // trazemos os ativos e filtramos na memória do servidor.
-    const { data: groups, error: fetchError } = await supabase
+    // 1. Pegamos o groupId do corpo da requisição (se vier da landing page)
+    const body = await req.json().catch(() => ({}));
+    const { groupId } = body;
+
+    // 2. Buscamos TODOS os grupos ativos do banco de uma vez
+    const { data: allGroups, error: fetchError } = await supabase
       .from('whatsapp_groups')
       .select('id, group_link, number_clicks, available_positions')
-      .eq('active', true)
-      .order('id', { ascending: true });
+      .eq('active', true);
 
-    if (fetchError || !groups || groups.length === 0) {
-      console.error("Erro ao procurar grupos:", fetchError);
+    if (fetchError || !allGroups || allGroups.length === 0) {
+      console.error("Erro ao buscar grupos:", fetchError);
       return NextResponse.json(
-        { error: "Desculpa, não encontrámos grupos ativos agora!" }, 
+        { error: "Nenhum grupo ativo encontrado no momento." }, 
         { status: 404 }
       );
     }
 
-    // 2. Filtramos no JavaScript o primeiro grupo que ainda tem vaga real
-    // Comparamos o número de cliques com a capacidade definida
-    const activeGroup = groups.find(g => 
-      Number(g.number_clicks || 0) < Number(g.available_positions || 0)
-    );
+    let targetGroup: WhatsAppGroup | null = null;
 
-    if (!activeGroup) {
-      return NextResponse.json(
-        { error: "Todos os nossos grupos estão cheios no momento!" }, 
-        { status: 404 }
-      );
+    // 3. Lógica de Seleção
+    
+    // Tentativa A: Se passou ID, verifica se o grupo existe e tem vaga
+    if (groupId) {
+      const specific = allGroups.find(g => g.id.toString() === groupId.toString());
+      if (specific && Number(specific.number_clicks || 0) < Number(specific.available_positions || 0)) {
+        targetGroup = specific;
+      }
     }
 
-    // 3. Incrementa o contador usando a função RPC 'increment_clicks'
-    const { error: updateError } = await supabase.rpc('increment_clicks', { row_id: activeGroup.id });
+    // Tentativa B: Se não teve ID ou o grupo do ID está lotado, pega um ALEATÓRIO com vaga
+    if (!targetGroup) {
+      const groupsWithSpace = allGroups.filter(g => 
+        Number(g.number_clicks || 0) < Number(g.available_positions || 0)
+      );
 
-    // Fallback caso o RPC não esteja configurado no painel do Supabase
+      if (groupsWithSpace.length > 0) {
+        // Sorteio aleatório entre os que têm vaga
+        targetGroup = groupsWithSpace[Math.floor(Math.random() * groupsWithSpace.length)];
+      } else {
+        // Fallback de segurança: Se TUDO estiver lotado, pega o primeiro grupo ativo 
+        // para o usuário não ficar sem link (melhor um grupo cheio que erro 404)
+        targetGroup = allGroups[0];
+      }
+    }
+
+    // 4. Incrementa o contador de cliques
+    // Tenta via RPC primeiro (mais performático e evita race conditions)
+    const { error: updateError } = await supabase.rpc('increment_clicks', { row_id: targetGroup.id });
+
+    // Fallback manual se o RPC não estiver configurado
     if (updateError) {
-      console.warn("RPC falhou ou não existe, a usar update manual:", updateError.message);
+      console.warn("RPC falhou, a usar update manual:", updateError.message);
       await supabase
         .from('whatsapp_groups')
-        .update({ number_clicks: (Number(activeGroup.number_clicks) || 0) + 1 })
-        .eq('id', activeGroup.id);
+        .update({ number_clicks: (Number(targetGroup.number_clicks) || 0) + 1 })
+        .eq('id', targetGroup.id);
     }
 
-    // 4. Retorna a URL para o redirecionamento
-    return NextResponse.json({ url: activeGroup.group_link }, { status: 200 });
+    // 5. Retorna o link final
+    return NextResponse.json({ url: targetGroup.group_link }, { status: 200 });
 
   } catch (error) {
     console.error("Erro crítico no servidor:", error);
     return NextResponse.json(
-      { error: "Erro interno no servidor ao processar o link." }, 
+      { error: "Erro interno ao processar o redirecionamento." }, 
       { status: 500 }
     );
   }
