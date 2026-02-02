@@ -53,6 +53,14 @@ export default function App() {
   const [vagasRestantes, setVagasRestantes] = useState<number>(14);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [groupIdParam, setGroupIdParam] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      setGroupIdParam(params.get('id'));
+    }
+  }, []);
 
   // 1. MONITORIZAÇÃO DE ACESSOS (PAGE VIEWS NO DB)
   useEffect(() => {
@@ -122,7 +130,11 @@ export default function App() {
     }
 
     try {
-      const response = await fetch('/api/groups/redirect', { method: 'POST' });
+      const response = await fetch('/api/groups/redirect', { 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ groupId: groupIdParam }) 
+      });
       const data = await response.json();
       
       if (data.url) {
