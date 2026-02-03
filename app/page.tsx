@@ -187,7 +187,7 @@ export default function App() {
             </div>
 
             <h1 className="text-white text-lg font-extrabold leading-tight px-4 uppercase tracking-tighter">
-              Participa na nossa Comunidade de Achadinhos
+              Participe da nossa Comunidade de Achadinhos
             </h1>
           </div>
 
