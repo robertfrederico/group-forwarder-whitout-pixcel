@@ -18,13 +18,17 @@ export async function POST(req: Request) {
   try {
     // 1. Pegamos o groupId do corpo da requisição (se vier da landing page)
     const body = await req.json().catch(() => ({}));
-    const { groupId } = body;
+    const { groupId, groupType } = body;
+
+    let groupTypeFilter = groupType; 
+    if (groupTypeFilter === '') groupTypeFilter = 'G'
 
     // 2. Buscamos TODOS os grupos ativos do banco de uma vez
     const { data: allGroups, error: fetchError } = await supabase
       .from('whatsapp_groups')
-      .select('id, group_link, number_clicks, available_positions, active')
+      .select('id, group_link, number_clicks, available_positions, active, group_type')
       .eq('active', true);
+      .eq('group_type, groupType);
 
     if (fetchError || !allGroups || allGroups.length === 0) {
       console.error("Erro ao buscar grupos:", fetchError);
