@@ -21,7 +21,7 @@ export async function POST(req: Request) {
     const { groupId, groupType } = body;
 
     let groupTypeFilter = groupType; 
-    if (groupTypeFilter === '') groupTypeFilter = 'G'
+    if (!groupTypeFilter) groupTypeFilter = 'G'
 
     // 2. Buscamos TODOS os grupos ativos do banco de uma vez
     const { data: allGroups, error: fetchError } = await supabase
