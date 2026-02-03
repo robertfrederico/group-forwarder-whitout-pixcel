@@ -54,11 +54,13 @@ export default function App() {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [groupIdParam, setGroupIdParam] = useState<string | null>(null);
+  const [groupTypeParam, setGroupTypeParam] = useState<string | null>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       setGroupIdParam(params.get('id'));
+      setGroupTypeParam(params.get('groupType'));
     }
   }, []);
 
@@ -133,7 +135,7 @@ export default function App() {
       const response = await fetch('/api/groups/redirect', { 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ groupId: groupIdParam }) 
+        body: JSON.stringify({ groupId: groupIdParam, groupType: groupTypeParam }) 
       });
       const data = await response.json();
       
