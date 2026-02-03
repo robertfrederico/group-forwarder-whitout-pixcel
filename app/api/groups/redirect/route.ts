@@ -28,7 +28,7 @@ export async function POST(req: Request) {
       .from('whatsapp_groups')
       .select('id, group_link, number_clicks, available_positions, active, group_type')
       .eq('active', true)
-      .eq('group_type, groupType);
+      .eq('group_type', groupType);
 
     if (fetchError || !allGroups || allGroups.length === 0) {
       console.error("Erro ao buscar grupos:", fetchError);
