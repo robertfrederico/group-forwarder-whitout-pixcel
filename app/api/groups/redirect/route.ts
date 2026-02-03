@@ -27,7 +27,7 @@ export async function POST(req: Request) {
     const { data: allGroups, error: fetchError } = await supabase
       .from('whatsapp_groups')
       .select('id, group_link, number_clicks, available_positions, active, group_type')
-      .eq('active', true);
+      .eq('active', true)
       .eq('group_type, groupType);
 
     if (fetchError || !allGroups || allGroups.length === 0) {
