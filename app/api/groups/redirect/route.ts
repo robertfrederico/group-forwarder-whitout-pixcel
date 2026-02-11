@@ -50,18 +50,15 @@ export async function POST(req: Request) {
       }
     }
 
-    // Tentativa B: Se não teve ID ou o grupo do ID está lotado, pega um ALEATÓRIO com vaga
+    // Tentativa B: Se não teve ID ou o grupo do ID está lotado, percorre a lista em ordem
     if (!targetGroup) {
-      const groupsWithSpace = allGroups.filter(g => 
+      // Procuramos o primeiro grupo da lista (na ordem que veio do banco) que ainda tem vaga
+      targetGroup = allGroups.find(g => 
         Number(g.number_clicks || 0) < Number(g.available_positions || 0)
       );
 
-      if (groupsWithSpace.length > 0) {
-        // Sorteio aleatório entre os que têm vaga
-        targetGroup = groupsWithSpace[Math.floor(Math.random() * groupsWithSpace.length)];
-      } else {
-        // Fallback de segurança: Se TUDO estiver lotado, pega o primeiro grupo ativo 
-        // para o usuário não ficar sem link (melhor um grupo cheio que erro 404)
+      // Fallback de segurança: Se TUDO estiver lotado, pega o primeiro grupo da lista
+      if (!targetGroup) {
         targetGroup = allGroups[0];
       }
     }
