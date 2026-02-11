@@ -28,7 +28,8 @@ export async function POST(req: Request) {
       .from('whatsapp_groups')
       .select('id, group_link, number_clicks, available_positions, active, group_type')
       .eq('active', true)
-      .eq('group_type', groupTypeFilter);
+      .eq('group_type', groupTypeFilter)
+      .order('id', { ascending: true });
 
     if (fetchError || !allGroups || allGroups.length === 0) {
       console.error("Erro ao buscar grupos:", fetchError);
@@ -52,15 +53,13 @@ export async function POST(req: Request) {
 
     // Tentativa B: Se não teve ID ou o grupo do ID está lotado, percorre a lista em ordem
     if (!targetGroup) {
-      // Procuramos o primeiro grupo da lista (na ordem que veio do banco) que ainda tem vaga
-      targetGroup = allGroups.find(g => 
+      // O "find" retorna o primeiro que encontrar. Se não achar, retorna undefined.
+      const found = allGroups.find(g => 
         Number(g.number_clicks || 0) < Number(g.available_positions || 0)
       );
 
-      // Fallback de segurança: Se TUDO estiver lotado, pega o primeiro grupo da lista
-      if (!targetGroup) {
-        targetGroup = allGroups[0];
-      }
+      // Atribuímos ao targetGroup. Se "found" for undefined, ele assume o fallback.
+      targetGroup = found || allGroups[0] || null;
     }
 
     // 4. Incrementa o contador de cliques
