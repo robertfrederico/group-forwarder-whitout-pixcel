@@ -1,26 +1,294 @@
 @import "tailwindcss";
 
+/* ─── Design tokens ─────────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --pink: oklch(48% 0.22 350);          /* rosa/magenta principal */
+  --yellow: oklch(85% 0.13 95);          /* amarelo marca-texto */
+  --yellow-bg: oklch(85% 0.15 95);       /* amarelo badge */
+  --purple-text: oklch(30% 0.1 300);     /* texto sobre amarelo */
+  --text-dark: oklch(20% 0.02 20);       /* quase-preto */
+  --text-mid: oklch(35% 0.01 20);        /* cinza médio */
+  --green-cta: oklch(65% 0.16 150);      /* verde WhatsApp */
+  --bg-cream: oklch(97% 0.015 40);       /* fundo neutro/creme */
+  --chip-bg: oklch(96% 0.01 40);         /* fundo chips */
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ─── Reset ──────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-poppins), system-ui, sans-serif;
+  background: #f0eee9;
+  color: var(--text-dark);
+}
+
+button, input, textarea, select {
+  font: inherit;
+}
+
+/* ─── Page card: centered 390px, full-height ─────────────── */
+.page-card {
+  width: 100%;
+  max-width: 390px;
+  min-height: 100dvh;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-cream);
+  overflow: hidden;
+}
+
+/* ─── Hero ───────────────────────────────────────────────── */
+.hero {
+  position: relative;
+  padding: 18px 16px 20px 20px;
+  min-height: 280px;
+  background: linear-gradient(
+    150deg,
+    oklch(97% 0.02 60) 0%,
+    oklch(93% 0.05 20) 45%,
+    oklch(85% 0.1 350) 100%
+  );
+  box-sizing: border-box;
+}
+
+.hero__badge-row {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.hero__badge-access {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--yellow-bg);
+  color: var(--purple-text);
+  font-weight: 800;
+  font-size: 9.5px;
+  letter-spacing: 0.03em;
+  padding: 5px 11px;
+  border-radius: 20px;
+}
+
+.hero__body {
+  padding-right: 150px;
+}
+
+.hero__eyebrow {
+  font-family: var(--font-kalam), cursive;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--pink);
+  margin-bottom: 4px;
+}
+
+.hero__title {
+  font-size: 20px;
+  line-height: 1.14;
+  font-weight: 800;
+  color: var(--text-dark);
+  margin-bottom: 6px;
+}
+
+.hero__title-mark {
+  background: linear-gradient(transparent 60%, var(--yellow) 60%);
+  color: var(--pink);
+}
+
+.hero__desc {
+  font-size: 10.5px;
+  line-height: 1.4;
+  color: var(--text-mid);
+  margin-bottom: 10px;
+}
+
+.hero__social-badge {
+  display: inline-flex;
+  align-items: center;
+  background: var(--pink);
+  color: #fff;
+  border-radius: 12px;
+  padding: 7px 12px;
+  font-weight: 700;
+  font-size: 9.5px;
+  line-height: 1.3;
+}
+
+/* Photo — absolute, bottom-right, with radial mask to blend */
+.hero__photo {
+  position: absolute;
+  bottom: 0;
+  right: 16px;
+  width: 140px;
+  height: 245px;
+  pointer-events: none;
+}
+
+.hero__photo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  mask-image: radial-gradient(ellipse 55% 140% at 50% 60%, black 45%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 55% 140% at 50% 60%, black 45%, transparent 100%);
+  display: block;
+}
+
+.hero__error {
+  margin-top: 8px;
+  font-size: 11px;
+  color: #b42318;
+  background: rgba(255,255,255,0.9);
+  padding: 6px 10px;
+  border-radius: 8px;
+}
+
+/* ─── Stores ─────────────────────────────────────────────── */
+.stores {
+  padding: 10px 20px 8px;
+  background: var(--bg-cream);
+}
+
+.stores__title {
+  text-align: center;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--pink);
+  margin-bottom: 7px;
+}
+
+.stores__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+}
+
+.store-chip {
+  font-weight: 700;
+  font-size: 10.5px;
+  padding: 5px 9px;
+  border-radius: 7px;
+  background: var(--chip-bg);
+}
+
+/* ─── CTA section ────────────────────────────────────────── */
+.cta-section {
+  padding: 12px 20px;
+  background: #fff;
+}
+
+.cta-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: 100%;
+  background: var(--green-cta);
+  color: #fff;
+  border: none;
+  border-radius: 13px;
+  padding: 14px;
+  font-weight: 700;
+  font-size: 13.5px;
+  cursor: pointer;
+  box-shadow: 0 6px 18px oklch(65% 0.16 150 / 0.35);
+  transition: opacity 0.15s;
+}
+
+.cta-button:disabled {
+  opacity: 0.72;
+  cursor: not-allowed;
+}
+
+/* ─── Offers grid ────────────────────────────────────────── */
+.offers-section {
+  padding: 12px 20px;
+  background: var(--pink);
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 0;
+}
+
+.offers-section__title {
+  text-align: center;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.offers-section__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.offer-slot {
+  aspect-ratio: 1;
+  border-radius: 8px;
+  overflow: hidden;
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(255,255,255,.35),
+    rgba(255,255,255,.35) 6px,
+    rgba(255,255,255,.55) 6px,
+    rgba(255,255,255,.55) 12px
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.offer-slot__placeholder {
+  font: 600 7px ui-monospace, monospace;
+  color: #5a1339;
+}
+
+.offer-slot__img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #fff;
+  display: block;
+}
+
+/* ─── Footer ─────────────────────────────────────────────── */
+.footer {
+  padding: 10px 20px 14px;
+  background: #fff;
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+}
+
+.footer__seal {
+  font-size: 9.5px;
+  color: #888;
+}
+
+/* ─── Desktop: centralizar card ──────────────────────────── */
+@media (min-width: 391px) {
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 0;
+    min-height: 100vh;
+  }
+
+  .page-card {
+    border-radius: 24px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.12);
+    min-height: 844px;
+  }
 }
