@@ -184,6 +184,15 @@ button, input, textarea, select {
   background: #fff;
 }
 
+.cta-urgency {
+  text-align: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: oklch(48% 0.22 350);
+  letter-spacing: 0.02em;
+  margin-bottom: 6px;
+}
+
 .cta-button {
   display: flex;
   align-items: center;

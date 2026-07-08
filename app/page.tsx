@@ -85,6 +85,7 @@ export default function App() {
       <Hero loading={loading} error={error} onJoinGroup={handleJoinGroup} />
       <Stores />
       <section className="cta-section">
+        <p className="cta-urgency">⚡ As melhores ofertas acabam rápido</p>
         <CTAButton loading={loading} onClick={handleJoinGroup} />
       </section>
       <Offers />
