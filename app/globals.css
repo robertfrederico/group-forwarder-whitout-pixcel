@@ -300,4 +300,317 @@ button, input, textarea, select {
     box-shadow: 0 8px 40px rgba(0,0,0,0.12);
     min-height: 844px;
   }
+
+  .tech-page-card {
+    border-radius: 12px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+    min-height: 844px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TECH PAGE (/tech) — paleta vermelho/preto, estilo gamer
+   Todas as classes prefixadas com .tech- para isolar da raiz
+   ═══════════════════════════════════════════════════════════ */
+
+/* ─── Tokens tech ────────────────────────────────────────── */
+:root {
+  --tech-red:       oklch(65% 0.22 25);
+  --tech-red-dark:  oklch(58% 0.22 25);
+  --tech-black:     oklch(9% 0.008 25);
+  --tech-dark:      oklch(15% 0.015 25);
+  --tech-chip-bg:   oklch(17% 0.01 25);
+  --tech-green:     oklch(65% 0.16 150);
+  --font-raj:       var(--font-rajdhani), 'Rajdhani', sans-serif;
+}
+
+/* ─── Page card tech ─────────────────────────────────────── */
+.tech-page-card {
+  width: 100%;
+  max-width: 390px;
+  min-height: 100dvh;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  background: var(--tech-black);
+  overflow: hidden;
+  font-family: var(--font-poppins), system-ui, sans-serif;
+}
+
+/* ─── Hero tech ──────────────────────────────────────────── */
+.tech-hero {
+  position: relative;
+  padding: 16px 16px 18px 20px;
+  min-height: 280px;
+  background: linear-gradient(
+    155deg,
+    oklch(18% 0.04 25) 0%,
+    oklch(12% 0.02 25) 50%,
+    oklch(8% 0.01 25) 100%
+  );
+  box-sizing: border-box;
+}
+
+/* textura diagonal discreta */
+.tech-hero__texture {
+  position: absolute;
+  inset: 0;
+  opacity: 0.5;
+  background: repeating-linear-gradient(
+    115deg,
+    transparent 0 26px,
+    oklch(58% 0.22 25 / 0.08) 26px 27px
+  );
+  pointer-events: none;
+}
+
+.tech-hero__content {
+  position: relative;
+  z-index: 1;
+}
+
+/* tag com canto cortado inferior-esquerdo */
+.tech-hero__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--tech-red-dark);
+  color: #fff;
+  font-family: var(--font-raj);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 5px 12px 5px 9px;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+}
+
+.tech-hero__body {
+  padding-right: 150px;
+  margin-top: 12px;
+}
+
+.tech-hero__title {
+  font-family: var(--font-raj);
+  font-size: 28px;
+  line-height: 1.05;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: #fff;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.tech-hero__title-mark {
+  color: var(--tech-red);
+}
+
+.tech-hero__desc {
+  font-size: 10.5px;
+  line-height: 1.4;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 10px;
+}
+
+/* selo de prova social com canto cortado superior-esquerdo */
+.tech-hero__social-badge {
+  display: inline-flex;
+  align-items: center;
+  background: #fff;
+  color: oklch(20% 0.02 25);
+  font-family: var(--font-raj);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  line-height: 1.3;
+  clip-path: polygon(8px 0, 100% 0, 100% 100%, 0 100%, 0 8px);
+}
+
+/* foto com máscara radial */
+.tech-hero__photo {
+  position: absolute;
+  bottom: 0;
+  right: 16px;
+  width: 140px;
+  height: 245px;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.tech-hero__photo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  mask-image: radial-gradient(ellipse 55% 140% at 50% 60%, black 45%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 55% 140% at 50% 60%, black 45%, transparent 100%);
+  display: block;
+}
+
+.tech-hero__error {
+  position: relative;
+  z-index: 1;
+  margin-top: 8px;
+  font-size: 11px;
+  color: #ff9999;
+  background: rgba(0,0,0,0.6);
+  padding: 6px 10px;
+  border-radius: 4px;
+}
+
+/* ─── Stores tech ────────────────────────────────────────── */
+.tech-stores {
+  padding: 10px 20px 8px;
+  background: var(--tech-black);
+}
+
+.tech-stores__title {
+  text-align: center;
+  font-family: var(--font-raj);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tech-red);
+  margin-bottom: 7px;
+}
+
+.tech-stores__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+}
+
+.tech-store-chip {
+  font-family: var(--font-raj);
+  font-weight: 700;
+  font-size: 10px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  padding: 5px 9px;
+  border-radius: 3px;
+  background: var(--tech-chip-bg);
+}
+
+/* ─── CTA tech ───────────────────────────────────────────── */
+.tech-cta-section {
+  padding: 12px 20px 6px;
+  background: var(--tech-black);
+}
+
+.tech-cta-urgency {
+  text-align: center;
+  font-family: var(--font-raj);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--tech-red);
+  margin-bottom: 9px;
+}
+
+/* botão com canto cortado superior-esquerdo */
+.tech-cta-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: 100%;
+  background: var(--tech-green);
+  color: #fff;
+  border: none;
+  font-family: var(--font-raj);
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  padding: 14px;
+  cursor: pointer;
+  clip-path: polygon(10px 0, 100% 0, 100% 100%, 0 100%, 0 10px);
+  box-shadow: 0 6px 18px oklch(65% 0.16 150 / 0.35);
+  transition: opacity 0.15s;
+}
+
+.tech-cta-button:disabled {
+  opacity: 0.72;
+  cursor: not-allowed;
+}
+
+/* ─── Offers tech ────────────────────────────────────────── */
+.tech-offers {
+  padding: 10px 20px;
+  background: var(--tech-dark);
+  border-top: 1px solid oklch(35% 0.08 25 / 0.3);
+  border-bottom: 1px solid oklch(35% 0.08 25 / 0.3);
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.tech-offers__title {
+  text-align: center;
+  font-family: var(--font-raj);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tech-red);
+  margin-bottom: 7px;
+}
+
+.tech-offers__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.tech-offer-slot {
+  aspect-ratio: 3/5;
+  border-radius: 4px;
+  overflow: hidden;
+  background: repeating-linear-gradient(
+    45deg,
+    oklch(24% 0.03 25),
+    oklch(24% 0.03 25) 6px,
+    oklch(18% 0.02 25) 6px,
+    oklch(18% 0.02 25) 12px
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tech-offer-slot__placeholder {
+  font-family: var(--font-raj);
+  font-weight: 700;
+  font-size: 8px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--tech-red);
+}
+
+.tech-offer-slot__img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: oklch(15% 0.015 25);
+  display: block;
+}
+
+/* ─── Footer tech ────────────────────────────────────────── */
+.tech-footer {
+  padding: 9px 20px 12px;
+  background: var(--tech-black);
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+}
+
+.tech-footer__seal {
+  font-size: 9.5px;
+  color: rgba(255,255,255,0.45);
 }
