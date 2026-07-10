@@ -45,6 +45,11 @@ export function useGroupRedirect(defaultGroupType?: string) {
     setError(null);
     const timeout = setTimeout(() => setLoading(false), 8000);
 
+    // Abre janela em branco DENTRO do gesto do usuário (antes do await).
+    // Necessário no iOS Safari: após um await, o contexto de gesto é perdido
+    // e deep links do WhatsApp são redirecionados para a App Store em vez do app.
+    const target = window.open("", "_blank");
+
     const fbq = (window as any).fbq;
     if (fbq) fbq("track", "Lead", {
       content_name: "Entrada no Grupo",
@@ -60,12 +65,18 @@ export function useGroupRedirect(defaultGroupType?: string) {
       });
       const data = await res.json();
       if (data.url) {
-        setTimeout(() => { window.location.href = data.url; }, 500);
+        if (target) {
+          target.location.href = data.url;
+        } else {
+          window.location.href = data.url;
+        }
       } else {
+        target?.close();
         throw new Error(data.error || "Nenhum grupo disponível.");
       }
     } catch {
       clearTimeout(timeout);
+      target?.close();
       setError("Não conseguimos validar a tua vaga. Tenta novamente!");
       setLoading(false);
     }
