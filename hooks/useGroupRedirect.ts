@@ -46,7 +46,11 @@ export function useGroupRedirect(defaultGroupType?: string) {
     const timeout = setTimeout(() => setLoading(false), 8000);
 
     const fbq = (window as any).fbq;
-    if (fbq) fbq("track", "Lead", { content_name: "Entrada no Grupo" });
+    if (fbq) fbq("track", "Lead", {
+      content_name: "Entrada no Grupo",
+      value: 1.00,
+      currency: "BRL",
+    });
 
     try {
       const res = await fetch("/api/groups/redirect", {
