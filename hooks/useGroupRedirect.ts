@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 
-const PIXEL_ID = process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID;
+const DEFAULT_PIXEL_ID = process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID;
 
-export function useGroupRedirect(defaultGroupType?: string) {
+export function useGroupRedirect(defaultGroupType?: string, pixelId?: string) {
+  const PIXEL_ID = pixelId ?? DEFAULT_PIXEL_ID;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [groupIdParam, setGroupIdParam] = useState<string | null>(null);

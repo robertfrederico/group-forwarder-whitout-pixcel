@@ -8,7 +8,10 @@ import TechOffers from "@/components/tech/TechOffers";
 import TechFooter from "@/components/tech/TechFooter";
 
 export default function TechPage() {
-  const { loading, error, handleJoinGroup } = useGroupRedirect("T");
+  const { loading, error, handleJoinGroup } = useGroupRedirect(
+    "T",
+    process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID_TECH,
+  );
 
   return (
     <main className="tech-page-card">
