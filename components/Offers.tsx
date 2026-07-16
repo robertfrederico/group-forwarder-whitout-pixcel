@@ -87,6 +87,8 @@ export default function Offers() {
               <img
                 src={src}
                 alt={`Oferta ${i + 1}`}
+                loading={i === 0 ? "eager" : "lazy"}
+                decoding="async"
                 style={{ width: "100%", height: "100%", objectFit: "contain", display: "block" }}
               />
             </div>

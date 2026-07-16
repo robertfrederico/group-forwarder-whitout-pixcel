@@ -32,9 +32,11 @@ export default function Hero({ error }: HeroProps) {
       <div className="hero__photo">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/camilla.png"
+          src="/camilla.webp"
           alt="Camilla"
           className="hero__photo-img"
+          fetchPriority="high"
+          decoding="sync"
         />
       </div>
 
