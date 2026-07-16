@@ -1,13 +1,11 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { useGroupRedirect } from "@/hooks/useGroupRedirect";
 import TechHero from "@/components/tech/TechHero";
 import TechStores from "@/components/tech/TechStores";
 import TechCTAButton from "@/components/tech/TechCTAButton";
+import TechOffers from "@/components/tech/TechOffers";
 import TechFooter from "@/components/tech/TechFooter";
-
-const TechOffers = dynamic(() => import("@/components/tech/TechOffers"), { ssr: false });
 
 export default function TechPage() {
   const { loading, error, handleJoinGroup } = useGroupRedirect(
