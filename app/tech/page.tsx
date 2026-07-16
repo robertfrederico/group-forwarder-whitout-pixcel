@@ -21,7 +21,7 @@ export default function TechPage() {
 
       <TechStores />
 
-      <p className="tech-bottom-urgency">⚡ Muitas ofertas<br />acabam em poucos minutos</p>
+      <p className="tech-bottom-urgency" style={{ fontSize: "17.5px", fontWeight: 700 }}>⚡ Muitas ofertas<br />acabam em poucos minutos</p>
 
       <TechOffers />
       <TechFooter />

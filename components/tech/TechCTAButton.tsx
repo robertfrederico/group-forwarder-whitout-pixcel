@@ -20,7 +20,7 @@ export default function TechCTAButton({ loading, onClick }: TechCTAButtonProps) 
           onClick={onClick}
           disabled={loading}
           className="tech-cta-button"
-          style={{ flexWrap: "wrap" }}
+          style={{ flexWrap: "wrap", boxShadow: "0 4px 14px rgba(0,0,0,0.35)" }}
         >
           {loading ? (
             <span>Validando acesso...</span>

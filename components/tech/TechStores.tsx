@@ -8,8 +8,8 @@ const CHIPS = [
 
 export default function TechStores() {
   return (
-    <section className="tech-stores">
-      <p className="tech-stores__title">Lojas confiáveis</p>
+    <section className="tech-stores" style={{ paddingTop: 0 }}>
+      <p className="tech-stores__title" style={{ color: "#fff" }}>Lojas confiáveis</p>
       <div className="tech-stores__chips">
         {CHIPS.map((chip) => (
           <span key={chip.name} className="tech-store-chip" style={{ color: chip.color }}>

@@ -19,6 +19,26 @@ const IMAGES = [
   "/ofertas-tech/oferta-tech-3.jpg",
 ];
 
+const btnStyle: React.CSSProperties = {
+  position: "absolute",
+  top: "50%",
+  transform: "translateY(-50%)",
+  background: "rgba(0,0,0,0.45)",
+  border: "none",
+  color: "#fff",
+  fontSize: 22,
+  lineHeight: 1,
+  width: 32,
+  height: 32,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  cursor: "pointer",
+  borderRadius: 4,
+  padding: 0,
+  zIndex: 2,
+};
+
 export default function TechOffers() {
   const [current, setCurrent] = useState(0);
   const touchStartX = useRef<number | null>(null);
@@ -45,34 +65,60 @@ export default function TechOffers() {
 
   return (
     <section className="tech-offers">
-      <p className="tech-offers__title">Algumas ofertas reais que já compartilhei</p>
+      <p className="tech-offers__title" style={{ color: "#fff", fontSize: "12.5px", letterSpacing: "0.095em" }}>Algumas ofertas reais que já compartilhei</p>
 
-      <div className="tech-carousel">
+      <div style={{ position: "relative", overflow: "hidden", borderRadius: 6, boxShadow: "0 4px 20px rgba(0,0,0,0.45)" }}>
         <div
-          className="tech-carousel__track"
-          style={{ transform: `translateX(-${current * 100}%)` }}
+          style={{
+            display: "flex",
+            transition: "transform 0.35s ease",
+            transform: `translateX(-${current * 100}%)`,
+          }}
           onTouchStart={onTouchStart}
           onTouchEnd={onTouchEnd}
         >
           {IMAGES.map((src, i) => (
-            <div key={i} className="tech-carousel__slide">
+            <div
+              key={i}
+              style={{
+                flex: "0 0 100%",
+                aspectRatio: "3/4",
+                background: "oklch(12% 0.01 25)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={src} alt={`Oferta ${i + 1}`} className="tech-carousel__img" />
+              <img
+                src={src}
+                alt={`Oferta ${i + 1}`}
+                style={{ width: "100%", height: "100%", objectFit: "contain", display: "block" }}
+              />
             </div>
           ))}
         </div>
 
-        <button className="tech-carousel__btn tech-carousel__btn--prev" onClick={prev} aria-label="Anterior">‹</button>
-        <button className="tech-carousel__btn tech-carousel__btn--next" onClick={next} aria-label="Próximo">›</button>
+        <button style={{ ...btnStyle, left: 6 }} onClick={prev} aria-label="Anterior">‹</button>
+        <button style={{ ...btnStyle, right: 6 }} onClick={next} aria-label="Próximo">›</button>
       </div>
 
-      <div className="tech-carousel__dots">
+      <div style={{ display: "flex", justifyContent: "center", gap: 5, padding: "8px 0 4px" }}>
         {IMAGES.map((_, i) => (
           <button
             key={i}
-            className={`tech-carousel__dot${i === current ? " tech-carousel__dot--active" : ""}`}
             onClick={() => setCurrent(i)}
             aria-label={`Oferta ${i + 1}`}
+            style={{
+              width: i === current ? 16 : 6,
+              height: 6,
+              borderRadius: i === current ? 3 : "50%",
+              background: i === current ? "var(--tech-red)" : "rgba(255,255,255,0.25)",
+              border: "none",
+              padding: 0,
+              cursor: "pointer",
+              transition: "all 0.2s",
+            }}
           />
         ))}
       </div>

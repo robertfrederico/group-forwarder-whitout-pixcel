@@ -236,39 +236,80 @@ button, input, textarea, select {
   margin-bottom: 8px;
 }
 
-.offers-section__grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
+/* ─── Carrossel de ofertas (raiz) ────────────────────────── */
+.offers-carousel {
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
 }
 
-.offer-slot {
-  aspect-ratio: 1;
-  border-radius: 8px;
-  overflow: hidden;
-  background: repeating-linear-gradient(
-    45deg,
-    rgba(255,255,255,.35),
-    rgba(255,255,255,.35) 6px,
-    rgba(255,255,255,.55) 6px,
-    rgba(255,255,255,.55) 12px
-  );
+.offers-carousel__track {
+  display: flex;
+  transition: transform 0.35s ease;
+  will-change: transform;
+}
+
+.offers-carousel__slide {
+  flex: 0 0 100%;
+  aspect-ratio: 3/4;
+  background: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.offer-slot__placeholder {
-  font: 600 7px ui-monospace, monospace;
-  color: #5a1339;
-}
-
-.offer-slot__img {
+.offers-carousel__img {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  background: #fff;
   display: block;
+}
+
+.offers-carousel__btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(90, 19, 57, 0.4);
+  border: none;
+  color: #fff;
+  font-size: 22px;
+  line-height: 1;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 0;
+  z-index: 2;
+}
+
+.offers-carousel__btn--prev { left: 6px; }
+.offers-carousel__btn--next { right: 6px; }
+
+.offers-carousel__dots {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  padding: 8px 0 2px;
+}
+
+.offers-carousel__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.offers-carousel__dot--active {
+  background: #fff;
+  width: 16px;
+  border-radius: 3px;
 }
 
 /* ─── Footer ─────────────────────────────────────────────── */
@@ -340,7 +381,7 @@ button, input, textarea, select {
 /* ─── Hero tech ──────────────────────────────────────────── */
 .tech-hero {
   position: relative;
-  padding: 16px 16px 18px 20px;
+  padding: 16px 16px 6px 20px;
   min-height: 280px;
   background: linear-gradient(
     155deg,
@@ -501,7 +542,7 @@ button, input, textarea, select {
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--tech-red);
+  color: rgba(255, 255, 255, 0.75);
   margin-bottom: 7px;
 }
 
@@ -636,7 +677,7 @@ button, input, textarea, select {
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--tech-red);
+  color: rgba(255, 255, 255, 0.75);
   margin-bottom: 7px;
 }
 
