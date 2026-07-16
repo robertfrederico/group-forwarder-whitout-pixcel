@@ -1,10 +1,4 @@
-type HeroProps = {
-  loading?: boolean;
-  error: string | null;
-  onJoinGroup: () => void;
-};
-
-export default function Hero({ error }: HeroProps) {
+export default function Hero() {
   return (
     <section className="hero">
       {/* Badge de acesso gratuito */}
@@ -40,7 +34,6 @@ export default function Hero({ error }: HeroProps) {
         />
       </div>
 
-      {error ? <p className="hero__error">{error}</p> : null}
     </section>
   );
 }

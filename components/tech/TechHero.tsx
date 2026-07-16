@@ -1,8 +1,4 @@
-type TechHeroProps = {
-  error: string | null;
-};
-
-export default function TechHero({ error }: TechHeroProps) {
+export default function TechHero() {
   return (
     <section className="tech-hero">
       {/* Textura diagonal tech */}
@@ -40,7 +36,6 @@ export default function TechHero({ error }: TechHeroProps) {
         />
       </div>
 
-      {error ? <p className="tech-hero__error">{error}</p> : null}
     </section>
   );
 }

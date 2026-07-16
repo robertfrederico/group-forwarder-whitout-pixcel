@@ -1,23 +1,17 @@
-"use client";
-
-import { useGroupRedirect } from "@/hooks/useGroupRedirect";
+import { preload } from "react-dom";
 import Hero from "@/components/Hero";
 import Stores from "@/components/Stores";
-import CTAButton from "@/components/CTAButton";
+import PageInteractive from "@/components/PageInteractive";
 import Offers from "@/components/Offers";
 import Footer from "@/components/Footer";
 
-export default function App() {
-  const { loading, error, handleJoinGroup } = useGroupRedirect();
-
+export default function Home() {
+  preload("/camilla.webp", { as: "image", fetchPriority: "high" });
   return (
     <main className="page-card">
-      <Hero loading={loading} error={error} onJoinGroup={handleJoinGroup} />
+      <Hero />
       <Stores />
-      <section className="cta-section">
-        <p className="cta-urgency">⚡ As melhores ofertas acabam rápido</p>
-        <CTAButton loading={loading} onClick={handleJoinGroup} />
-      </section>
+      <PageInteractive />
       <Offers />
       <Footer />
     </main>

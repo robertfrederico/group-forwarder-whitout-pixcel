@@ -3,12 +3,12 @@
 import { useEffect, useRef, useState } from "react";
 
 const OFFER_IMAGES: string[] = [
-  "/oferta1.png",
-  "/oferta2.png",
-  "/oferta3.png",
-  "/oferta4.png",
-  "/oferta5.png",
-  "/oferta6.png",
+  "/oferta1.webp",
+  "/oferta2.webp",
+  "/oferta3.webp",
+  "/oferta4.webp",
+  "/oferta5.webp",
+  "/oferta6.webp",
 ];
 
 const btnStyle: React.CSSProperties = {
