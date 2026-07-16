@@ -3,20 +3,20 @@
 import { useEffect, useRef, useState } from "react";
 
 const IMAGES = [
-  "/ofertas-tech/oferta1.jpeg",
-  "/ofertas-tech/oferta2.jpeg",
-  "/ofertas-tech/oferta3.jpeg",
-  "/ofertas-tech/oferta4.jpeg",
-  "/ofertas-tech/oferta5.jpeg",
-  "/ofertas-tech/oferta6.jpeg",
-  "/ofertas-tech/oferta7.jpeg",
-  "/ofertas-tech/oferta8.jpeg",
-  "/ofertas-tech/oferta9.jpeg",
-  "/ofertas-tech/oferat10.jpeg",
-  "/ofertas-tech/oferta11.jpeg",
-  "/ofertas-tech/oferta12.png",
-  "/ofertas-tech/oferta-tech-2.jpg",
-  "/ofertas-tech/oferta-tech-3.jpg",
+  "/ofertas-tech/oferta1.webp",
+  "/ofertas-tech/oferta2.webp",
+  "/ofertas-tech/oferta3.webp",
+  "/ofertas-tech/oferta4.webp",
+  "/ofertas-tech/oferta5.webp",
+  "/ofertas-tech/oferta6.webp",
+  "/ofertas-tech/oferta7.webp",
+  "/ofertas-tech/oferta8.webp",
+  "/ofertas-tech/oferta9.webp",
+  "/ofertas-tech/oferat10.webp",
+  "/ofertas-tech/oferta11.webp",
+  "/ofertas-tech/oferta12.webp",
+  "/ofertas-tech/oferta-tech-2.webp",
+  "/ofertas-tech/oferta-tech-3.webp",
 ];
 
 const btnStyle: React.CSSProperties = {

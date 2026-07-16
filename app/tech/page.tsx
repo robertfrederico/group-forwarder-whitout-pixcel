@@ -7,6 +7,7 @@ import TechFooter from "@/components/tech/TechFooter";
 
 export default function TechPage() {
   preload("/robert.webp", { as: "image", fetchPriority: "high" });
+  preload("/ofertas-tech/oferta1.webp", { as: "image" });
   return (
     <main className="tech-page-card">
       <TechHero />
