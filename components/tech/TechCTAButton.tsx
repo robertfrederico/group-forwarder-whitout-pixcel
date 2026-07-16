@@ -13,23 +13,37 @@ function WhatsAppIcon() {
 
 export default function TechCTAButton({ loading, onClick }: TechCTAButtonProps) {
   return (
-    <section className="tech-cta-section">
-      <p className="tech-cta-urgency">🔥 As melhores ofertas esgotam super rápido</p>
-      <button
-        type="button"
-        onClick={onClick}
-        disabled={loading}
-        className="tech-cta-button"
-      >
-        {loading ? (
-          <span>Validando acesso...</span>
-        ) : (
-          <>
-            <WhatsAppIcon />
-            <span>Quero entrar no grupo VIP</span>
-          </>
-        )}
-      </button>
-    </section>
+    <>
+      <section className="tech-cta-section">
+        <button
+          type="button"
+          onClick={onClick}
+          disabled={loading}
+          className="tech-cta-button"
+          style={{ flexWrap: "wrap" }}
+        >
+          {loading ? (
+            <span>Validando acesso...</span>
+          ) : (
+            <>
+              <WhatsAppIcon />
+              <span>Quero entrar no grupo VIP</span>
+              <span style={{
+                flexBasis: "100%",
+                textAlign: "center",
+                fontSize: "9px",
+                fontWeight: 500,
+                color: "rgba(255,255,255,0.72)",
+                textTransform: "none",
+                letterSpacing: "0.01em",
+                lineHeight: "1.5",
+              }}>
+                ✔️ Gratuito • Sem spam
+              </span>
+            </>
+          )}
+        </button>
+      </section>
+    </>
   );
 }

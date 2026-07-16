@@ -16,8 +16,13 @@ export default function TechPage() {
   return (
     <main className="tech-page-card">
       <TechHero error={error} />
-      <TechStores />
+
       <TechCTAButton loading={loading} onClick={handleJoinGroup} />
+
+      <TechStores />
+
+      <p className="tech-bottom-urgency">⚡ Muitas ofertas<br />acabam em poucos minutos</p>
+
       <TechOffers />
       <TechFooter />
     </main>

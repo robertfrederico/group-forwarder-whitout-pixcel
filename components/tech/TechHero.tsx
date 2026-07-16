@@ -18,11 +18,12 @@ export default function TechHero({ error }: TechHeroProps) {
             As <span className="tech-hero__title-mark">melhores promoções</span>{" "}
             de tecnologia, direto pra você
           </h1>
-          <p className="tech-hero__desc">
-            Eletrônicos, games, gadgets, informática e muito mais — todo dia.
+          <p className="tech-hero__desc" style={{ color: "#fff" }}>
+            💸 Economize centenas de reais comprando na hora certa.
           </p>
           <div className="tech-hero__social-badge">
-            +200 MIL PESSOAS JÁ<br />ECONOMIZANDO COM A GENTE
+            <span className="tech-hero__social-highlight" style={{ whiteSpace: "nowrap" }}>👥 +200 MIL PESSOAS</span>
+            <span className="tech-hero__social-sub">já economizam com a gente.</span>
           </div>
         </div>
       </div>
