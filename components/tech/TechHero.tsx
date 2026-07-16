@@ -32,9 +32,11 @@ export default function TechHero({ error }: TechHeroProps) {
       <div className="tech-hero__photo">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/robert.png"
+          src="/robert.webp"
           alt="Robert"
           className="tech-hero__photo-img"
+          fetchPriority="high"
+          decoding="sync"
         />
       </div>
 
